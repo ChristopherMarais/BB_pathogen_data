@@ -51,7 +51,8 @@ COLS = [
     ("Record ID", "fact_id", 16), ("Source Stratum", "stratum", 22), ("Beetle", "beetle", 24),
     ("Organism as written", "pathogen_as_written", 26), ("Organism (GBIF name)", "pathogen_resolved_gbif", 26),
     ("Category", "category", 12), ("Relation as read", "relation_read", 14), ("Year", "year", 7),
-    ("Publication", "citation", 60), ("DOI / link", "link", 30), ("Language", "language", 9),
+    ("Publication", "citation", 60), ("DOI / link", "link", 30), ("Page / Locator", "locator", 16),
+    ("Source ID", "source_id", 24), ("Language", "language", 9),
     ("Beetle new to dataset", "new_beetle", 10), ("Pair new to dataset", "new_pair", 10),
     ("Supporting sentence (lab only)", "supporting_quote_INTERNAL_ONLY", 70),
     ("MEETS INCLUSION RULES?", None, 14), ("Beetle correct?", None, 10), ("Organism correct?", None, 10),
@@ -167,8 +168,8 @@ for key, title in names.items():
             if col in ("beetle", "pathogen_as_written", "pathogen_resolved_gbif"):
                 c.font = Font(italic=True)
     n = len(D) + 1
-    # Reviewer columns are O, P, Q, R in the 20-column layout (15th to 18th columns)
-    for col_letter, formula in (("O", '"Yes,No,Unsure"'), ("P", '"Yes,No"'), ("Q", '"Yes,No"'), ("R", reasons)):
+    # Reviewer columns are Q, R, S, T in the 22-column layout (17th to 20th columns)
+    for col_letter, formula in (("Q", '"Yes,No,Unsure"'), ("R", '"Yes,No"'), ("S", '"Yes,No"'), ("T", reasons)):
         dv = DataValidation(type="list", formula1=formula, allow_blank=True)
         s.add_data_validation(dv)
         dv.add(f"{col_letter}2:{col_letter}{max(n, 2)}")
@@ -213,7 +214,10 @@ def write_table_sheet(wb, title, df, col_specs, freeze="C2", flag_cols=()):
 
 
 # ---------------- Sheet 6: Secondary pointers
-P_df = clean_df(pd.read_csv(A / "out/INTERNAL_candidates_pointers.csv", dtype=str).fillna(""))
+pointers_csv = A / "out/INTERNAL_candidates_pointers.csv"
+if "INTERNAL" in str(src) and Path("/home/gmarais/gmarais/PhD/BarkBeetle_KG/papers/pathogens/analysis/out/INTERNAL_candidates_pointers.csv").exists():
+    pointers_csv = Path("/home/gmarais/gmarais/PhD/BarkBeetle_KG/papers/pathogens/analysis/out/INTERNAL_candidates_pointers.csv")
+P_df = clean_df(pd.read_csv(pointers_csv, dtype=str).fillna(""))
 p_specs = [
     ("Fact ID", "fact_id", 16, False),
     ("Beetle", "beetle", 24, False),
@@ -223,14 +227,16 @@ p_specs = [
     ("Relation", "relation", 12, False),
     ("Citing Publication", "citation", 55, False),
     ("URL / DOI", "url", 30, False),
-    ("Cited Work(s) (second_hand_of)", "second_hand_of", 35, False),
+    ("Cited Work(s) (second_hand_of)", "second_hand_of", 30, False),
+    ("Resolved Cited Reference(s)", "resolved_cited_references", 60, False),
     ("Supporting sentence (lab only)", "quote_INTERNAL", 65, False),
     ("Collaborator Notes", None, 30, True),
 ]
 write_table_sheet(wb, "6 Secondary pointers", P_df, p_specs, freeze="C2")
 
 # ---------------- Sheet 7: Current dataset (1,014 rows) + automated QC flags
-FS = clean_df(pd.read_csv(A / "figshare/bark_ambrosia_beetle_pathogen_database_v1.1.csv", encoding="utf-8-sig", dtype=str).fillna(""))
+FIGSHARE_PATH = A / "figshare/bark_ambrosia_beetle_pathogen_database_v1.1.csv" if (A / "figshare/bark_ambrosia_beetle_pathogen_database_v1.1.csv").exists() else A / "data/figshare/bark_ambrosia_beetle_pathogen_database_v1.1.csv"
+FS = clean_df(pd.read_csv(FIGSHARE_PATH, encoding="utf-8-sig", dtype=str).fillna(""))
 TB = clean_df(pd.read_csv(A / "out/taxonomy_beetles.csv", dtype=str).fillna(""))
 TP = clean_df(pd.read_csv(A / "out/taxonomy_pathogens.csv", dtype=str).fillna(""))
 RC = clean_df(pd.read_csv(A / "out/recall_by_publication.csv", dtype=str).fillna(""))
@@ -362,6 +368,7 @@ RC["doi_link"] = [f"https://doi.org/{d}" if d and not d.startswith("10.5555/") e
 rc_specs = [
     ("Pub ID", "pub_id", 9, False),
     ("Short Citation", "source", 22, False),
+    ("Dataset Record IDs", "record_ids", 18, False),
     ("Year", "year", 8, False),
     ("Categories", "categories", 18, False),
     ("Records in Dataset", "n_records", 12, False),
@@ -377,26 +384,34 @@ rc_specs = [
     ("Found in 2026 Enemy/Fungus Search?", "found_s2026_enemy_fungus", 16, False),
     ("Match Method", "match_quality", 16, False),
     ("Reason Missed (if not retrieved)", "why_missed", 38, False),
+    ("Matched Automated-Search Title", "best_title", 45, False),
     ("Full Reference", "ref", 60, False),
     ("Collaborator Notes", None, 28, True),
 ]
 write_table_sheet(wb, "8 Search recall (276 pubs)", RC, rc_specs, freeze="C2", flag_cols=("why_missed",))
 
 # ---------------- Sheet 9: Extraction agreement (895 pairs)
+AG["side_label"] = AG["side"].map({"her": "Dataset pair (Recall)", "kg": "Automated extraction (Precision)"}).fillna(AG["side"])
+AG["pred_or_rel"] = [gp if s == "her" else (f"{p} ({r})" if p and r else (p or r)) for s, gp, p, r in zip(AG["side"], AG["graph_predicates"], AG.get("predicate", [""]*len(AG)), AG.get("relation", [""]*len(AG)))]
+AG["doi_link"] = AG["doi_or_link"]
 ag_specs = [
     ("Pub ID", "pub_id", 9, False),
     ("Short Citation", "source", 22, False),
+    ("Dataset Record ID(s)", "dataset_record_ids", 18, False),
+    ("Perspective / Evaluation", "side_label", 24, False),
     ("Beetle Species", "beetle", 24, False),
-    ("Pathogen (Dataset)", "pathogen", 26, False),
+    ("Pathogen / Associate", "pathogen", 28, False),
     ("Category", "category", 14, False),
-    ("Text Processed (Automated)", "kg_text", 18, False),
-    ("Read via", "kg_read_via", 18, False),
-    ("Exact Taxon Match?", "reader_exact", 14, False),
-    ("Genus-Level Match?", "reader_genus", 14, False),
-    ("Category-Level Match?", "reader_category", 14, False),
-    ("Matched After Verification (Genus)?", "graph_genus", 16, False),
-    ("Why Missed / Differs", "why_reader_missed", 36, False),
-    ("Organisms extracted for this beetle in this paper", "kg_organisms_for_beetle", 45, False),
+    ("Text Processed", "kg_text", 16, False),
+    ("Read via", "kg_read_via", 16, False),
+    ("Reader Match (Dataset Pairs)", "reader", 18, False),
+    ("Graph Match (Dataset Pairs)", "graph", 18, False),
+    ("Extraction Filter Reason", "rejected_reason", 32, False),
+    ("Precision Status (Automated Pairs)", "precision_status", 36, False),
+    ("Extracted Relation / Predicate", "pred_or_rel", 24, False),
+    ("Resolved DOI / Link", "doi_link", 30, False),
+    ("Full Reference", "full_reference", 60, False),
+    ("Source ID", "kg_source_ids", 24, False),
     ("Collaborator Notes", None, 28, True),
 ]
 write_table_sheet(wb, "9 Extraction agreement (895)", AG, ag_specs, freeze="D2")
@@ -441,6 +456,10 @@ sv_cols = [
     ("Total Literature Works", "study_effort_works", 16),
     ("Records in Manual Dataset", "her_records", 16),
     ("Candidate Sources in Automated Search", "kg_pathogen_sources_not_in_her_data", 20),
+    ("Dataset Record IDs", "dataset_record_ids", 18),
+    ("Dataset References", "dataset_references", 55),
+    ("Candidate Pathogen References (Automated Search)", "candidate_references", 55),
+    ("Introduced-Range References", "distribution_references", 55),
 ]
 row_cursor = write_subtable(
     s10, row_cursor,
@@ -457,7 +476,7 @@ tr_cols = [
     ("Dataset Pubs per 1,000 OpenAlex Works", "per1000_openalex", 20),
     ("95% CI Low (OpenAlex)", "per1000_openalex_lo", 16),
     ("95% CI High (OpenAlex)", "per1000_openalex_hi", 16),
-    ("Dataset Pubs per 1,000 Corpus Works", "per1000_corpus", 20),
+    ("Dataset Pubs per 1,000 Corpus Works", "per1000_kg", 20),
     ("All Primary Pathogen Sources (Dataset + Automated)", "kg_primary_pathogen_sources", 22),
 ]
 row_cursor = write_subtable(
@@ -481,6 +500,8 @@ gc_cols = [
     ("Dataset Publications", "her_publications", 16),
     ("Total Known Beetle Species", "kg_species", 18),
     ("Introduced Beetle Species", "kg_introduced_species", 18),
+    ("Dataset Record IDs", "dataset_record_ids", 22),
+    ("Dataset References", "dataset_references", 60),
 ]
 row_cursor = write_subtable(
     s10, row_cursor,

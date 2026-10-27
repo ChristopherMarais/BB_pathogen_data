@@ -13,15 +13,16 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
-A = Path(__file__).resolve().parents[2] / "data"
-FIG = Path(__file__).resolve().parents[2] / "figures"
+A = Path(__file__).resolve().parent.parent
+FIG = A / "figures"
 FIG.mkdir(exist_ok=True)
 AUTHORS_FIG = A.parent / "figures_for_authors"
 
-BLUE, LIGHT, GREY, ORANGE, INK = "#4C72B0", "#A9BCD0", "#C9CED6", "#DD8452", "#333333"
+BLUE, LIGHT, GREY, ORANGE, INK = "#4C72B0", "#A9BCD0", "#C9CED6", "#DD8452", "#222222"
 plt.rcParams.update({
     "font.family": "DejaVu Sans",
-    "font.size": 9,
+    "font.size": 10,
+    "axes.labelsize": 10.5,
     "axes.spines.top": False,
     "axes.spines.right": False,
     "axes.spines.left": False,
@@ -32,9 +33,9 @@ plt.rcParams.update({
     "grid.linewidth": 0.8,
     "axes.axisbelow": True,
     "xtick.color": INK,
-    "ytick.color": "#444444",
+    "ytick.color": "#333333",
     "axes.titleweight": "bold",
-    "axes.titlesize": 10,
+    "axes.titlesize": 11.5,
     "axes.titlelocation": "left",
 })
 
@@ -64,7 +65,7 @@ def save(fig, name):
 def fig5():
     S = pd.read_csv(A / "out/recall_summary.csv").set_index("group")
     AG = pd.read_csv(A / "out/agreement_summary.csv")
-    fig, axs = plt.subplots(1, 3, figsize=(16.2, 5.2), gridspec_kw={"width_ratios": [1.22, 1.12, 1.26]})
+    fig, axs = plt.subplots(3, 1, figsize=(8.2, 9.2), gridspec_kw={"height_ratios": [1.0, 1.38, 1.05]})
 
     # ── Panel A: Search recall by decade (including 1920s = 0 to match Figure 4) ──
     ax = axs[0]
@@ -82,21 +83,21 @@ def fig5():
     n = np.array(n_vals)
     k = np.array(k_vals)
     x = np.arange(len(decades))
-    ax.bar(x, k, width=0.72, color=BLUE, label="retrieved by automated search (k)")
-    ax.bar(x, n - k, bottom=k, width=0.72, color=GREY, label="not retrieved (n - k)", edgecolor="white", linewidth=0.8)
+    ax.bar(x, k, width=0.68, color=BLUE, label="Retrieved by automated search (k)")
+    ax.bar(x, n - k, bottom=k, width=0.68, color=GREY, label="Not retrieved (n - k)", edgecolor="white", linewidth=0.8)
     for i in range(len(x)):
         if n[i] > 0:
             pct = 100.0 * k[i] / n[i]
-            ax.text(x[i], n[i] + 1.0, f"{k[i]}/{n[i]}\n({pct:.0f}%)",
-                    ha="center", va="bottom", fontsize=7.0, color=INK, linespacing=1.05)
+            ax.text(x[i], n[i] + 1.2, f"{k[i]}/{n[i]}\n({pct:.0f}%)",
+                    ha="center", va="bottom", fontsize=8.5, color=INK, linespacing=1.05)
         else:
-            ax.text(x[i], 0.8, "0", ha="center", va="bottom", fontsize=7.0, color="#777777")
-    ax.set_xticks(x, lab, rotation=40, ha="right", fontsize=8)
-    ax.set_ylim(0, 90)
-    ax.set_yticks(range(0, 81, 10))
-    ax.set_ylabel("Dataset source publications (n = 276)")
-    ax.set_title("A  Search recall by decade")
-    ax.legend(frameon=False, loc="upper left", fontsize=8)
+            ax.text(x[i], 1.0, "0", ha="center", va="bottom", fontsize=8.5, color="#777777")
+    ax.set_xticks(x, lab, fontsize=9.5)
+    ax.set_ylim(0, 94)
+    ax.set_yticks(range(0, 81, 20))
+    ax.set_ylabel("Source publications (n = 276)")
+    ax.set_title("A   Automated search recall by decade")
+    ax.legend(frameon=False, loc="upper left", fontsize=9.2)
 
     # ── Panel B: Recall by DOI status, publication type, and language ──
     ax = axs[1]
@@ -105,17 +106,17 @@ def fig5():
 
     items = [
         ("All sources", int(S.loc["all", "n_publications"]), int(S.loc["all", "found_kg_search"])),
-        ("with article DOI", int(S.loc["has article DOI", "n_publications"]), int(S.loc["has article DOI", "found_kg_search"])),
-        ("no article DOI", int(S.loc["no article DOI (none or CAB Abstracts record only)", "n_publications"]),
+        ("With article DOI", int(S.loc["has article DOI", "n_publications"]), int(S.loc["has article DOI", "found_kg_search"])),
+        ("No article DOI", int(S.loc["no article DOI (none or CAB Abstracts record only)", "n_publications"]),
          int(S.loc["no article DOI (none or CAB Abstracts record only)", "found_kg_search"])),
-        ("journal article", int(S.loc["type journal article", "n_publications"]), int(S.loc["type journal article", "found_kg_search"])),
-        ("report / proceedings", int(S.loc["type report / proceedings", "n_publications"]), int(S.loc["type report / proceedings", "found_kg_search"])),
-        ("book / chapter", int(S.loc["type book / chapter", "n_publications"]), int(S.loc["type book / chapter", "found_kg_search"])),
-        ("thesis", int(S.loc["type thesis", "n_publications"]), int(S.loc["type thesis", "found_kg_search"])),
+        ("Journal article", int(S.loc["type journal article", "n_publications"]), int(S.loc["type journal article", "found_kg_search"])),
+        ("Report / proceedings", int(S.loc["type report / proceedings", "n_publications"]), int(S.loc["type report / proceedings", "found_kg_search"])),
+        ("Book / chapter", int(S.loc["type book / chapter", "n_publications"]), int(S.loc["type book / chapter", "found_kg_search"])),
+        ("Thesis / dissertation", int(S.loc["type thesis", "n_publications"]), int(S.loc["type thesis", "found_kg_search"])),
         ("English", int(S.loc["language English", "n_publications"]), int(S.loc["language English", "found_kg_search"])),
         ("German", int(S.loc["language German", "n_publications"]), int(S.loc["language German", "found_kg_search"])),
         ("French", int(S.loc["language French", "n_publications"]), int(S.loc["language French", "found_kg_search"])),
-        ("Chinese (inferred)", int(S.loc[chinese_langs, "n_publications"].sum()), int(S.loc[chinese_langs, "found_kg_search"].sum())),
+        ("Chinese", int(S.loc[chinese_langs, "n_publications"].sum()), int(S.loc[chinese_langs, "found_kg_search"].sum())),
         ("Russian / Polish / Czech", int(S.loc[other_langs, "n_publications"].sum()), int(S.loc[other_langs, "found_kg_search"].sum())),
     ]
 
@@ -130,109 +131,107 @@ def fig5():
 
     y = np.arange(len(names))[::-1]
     bar_colors = [INK] + [BLUE] * (len(names) - 1)
-    ax.barh(y, vals, color=bar_colors, height=0.62, label="recall (%)")
+    ax.barh(y, vals, color=bar_colors, height=0.66, label="Recall (%)")
     ax.errorbar(vals, y, xerr=[np.maximum(0, np.array(vals) - lo), np.maximum(0, np.array(hi) - vals)],
-                fmt="none", ecolor="#666666", elinewidth=1.0, capsize=2.5, label="Wilson 95% CI")
+                fmt="none", ecolor="#555555", elinewidth=1.2, capsize=3.0, label="Wilson 95% CI")
 
-    # Subtle group dividers between: All (idx 0) | DOI (1..2) | Pub type (3..6) | Language (7..11)
     for split_after in [0, 2, 6]:
         y_div = (y[split_after] + y[split_after + 1]) / 2.0
-        ax.axhline(y_div, color="#CCCCCC", linestyle="--", linewidth=0.7)
+        ax.axhline(y_div, color="#CCCCCC", linestyle="--", linewidth=0.8)
 
-    # Print exact percentage aligned on the right column so it never collides with CI whiskers
     for yi, v in zip(y, vals):
-        ax.text(104, yi, f"{v:.0f}%", va="center", ha="left", fontsize=8, color=INK)
+        ax.text(103, yi, f"{v:.0f}%", va="center", ha="left", fontsize=9.2, color=INK, fontweight="medium")
 
-    ax.set_yticks(y, names, fontsize=8)
-    ax.set_xlim(0, 118)
+    ax.set_yticks(y, names, fontsize=9.5)
+    ax.set_xlim(0, 114)
     ax.set_xticks([0, 25, 50, 75, 100])
     ax.grid(axis="x")
     ax.grid(axis="y", visible=False)
     ax.set_xlabel("Publications retrieved by automated search (%)")
-    ax.set_title("B  Recall by identifier, type, and language")
-    ax.legend(frameon=True, facecolor="white", edgecolor="none", loc="center right", bbox_to_anchor=(0.86, 0.46), fontsize=7.5)
+    ax.set_title("B   Search recall by DOI availability, publication type, and language")
+    ax.legend(frameon=True, facecolor="white", edgecolor="none", loc="center right", bbox_to_anchor=(0.88, 0.53), fontsize=9.0)
 
-    # ── Panel C: Agreement with dataset records (bars & labels both show %, with k/n below) ──
+    # ── Panel C: Agreement with dataset records (ordered by full-text recall descending) ──
     ax = axs[2]
-    cats = ["all", "Fungi", "Microsporidia", "Protist", "Nematode", "Bacteria", "Virus"]
+    cats = ["all", "Microsporidia", "Bacteria", "Fungi", "Protist", "Nematode", "Virus"]
     names_c = {
-        "all": "all groups",
-        "Fungi": "fungi",
-        "Microsporidia": "microsporidia",
-        "Protist": "protists",
-        "Nematode": "nematodes",
-        "Bacteria": "bacteria",
-        "Virus": "viruses",
+        "all": "All groups",
+        "Microsporidia": "Microsporidia",
+        "Bacteria": "Bacteria",
+        "Fungi": "Fungi",
+        "Protist": "Protists",
+        "Nematode": "Nematodes",
+        "Virus": "Viruses",
     }
     w = 0.42
-    x = np.arange(len(cats)) * 1.28
+    x = np.arange(len(cats)) * 1.25
     for j, (subset, col, lbl) in enumerate([
-        ("full text", BLUE, "full text processed (n = 138 pairs)"),
-        ("abstract only", LIGHT, "abstract only processed (n = 248 pairs)"),
+        ("full text", BLUE, "Full text processed (n = 138 pairs)"),
+        ("abstract only", LIGHT, "Abstract only processed (n = 248 pairs)"),
     ]):
         g = AG[AG.subset.eq(subset)].set_index("category")
         v = [float(g.loc[c, "recall_graph_genus"]) if c in g.index else np.nan for c in cats]
         npairs = [int(g.loc[c, "her_pairs"]) if c in g.index else 0 for c in cats]
         krec = [int(round(vi * nn / 100.0)) if (nn and not np.isnan(vi)) else 0 for vi, nn in zip(v, npairs)]
-        xpos = x + (j - 0.5) * 0.50
+        xpos = x + (j - 0.5) * 0.48
         ax.bar(xpos, v, width=w, color=col, label=lbl, edgecolor="white", linewidth=0.8)
         for xi, vi, kk, nn in zip(xpos, v, krec, npairs):
             if nn:
-                dx = (-0.05 if j == 0 else 0.05) if (kk in (1, 12) and nn in (1, 12)) else 0.0
-                ax.text(xi + dx, vi + 1.5, f"{vi:.0f}%\n({kk}/{nn})",
-                        ha="center", va="bottom", fontsize=6.4, color=INK, linespacing=1.0)
-    ax.axvline(0.64, color="#CCCCCC", linestyle="--", linewidth=0.7)
-    ax.set_xticks(x, [names_c[c] for c in cats], rotation=30, ha="right", fontsize=8)
-    ax.set_ylim(0, 124)
+                dx = (-0.06 if j == 0 else 0.06) if (kk in (1, 12) and nn in (1, 12)) else 0.0
+                ax.text(xi + dx, vi + 1.8, f"{vi:.0f}%\n({kk}/{nn})",
+                        ha="center", va="bottom", fontsize=8.3, color=INK, linespacing=1.05)
+    ax.axvline(0.625, color="#CCCCCC", linestyle="--", linewidth=0.8)
+    ax.set_xticks(x, [names_c[c] for c in cats], fontsize=9.5)
+    ax.set_ylim(0, 128)
     ax.set_yticks([0, 20, 40, 60, 80, 100])
-    ax.set_ylabel("Dataset beetle–organism pairs recovered (%)")
-    ax.set_title("C  Extraction recall on shared publications")
-    ax.legend(frameon=False, fontsize=7.8, loc="upper right")
+    ax.set_ylabel("Dataset pairs recovered (%)")
+    ax.set_title("C   Automated text-extraction recall on shared publications")
+    ax.legend(frameon=False, fontsize=9.0, loc="upper right")
 
-    fig.tight_layout()
+    fig.tight_layout(pad=1.2)
     save(fig, "Figure5_crosscheck")
 
 
 def fig6():
     T = pd.read_csv(A / "out/trend_rescaled_decade.csv")
-    fig, axs = plt.subplots(1, 2, figsize=(12.6, 4.4))
+    fig, axs = plt.subplots(2, 1, figsize=(8.0, 6.8), gridspec_kw={"height_ratios": [1.0, 1.15]})
 
     # ── Panel A: Raw publication counts per period (n = 280; pre-1950 pooled) ──
     ax = axs[0]
     x = np.arange(len(T))
     cols = [BLUE] * (len(T) - 1) + [LIGHT]
-    ax.bar(x, T.her_publications, color=cols, width=0.68)
+    ax.bar(x, T.her_publications, color=cols, width=0.64)
     for xi, v in zip(x, T.her_publications):
-        ax.text(xi, v + 1.2, str(int(v)), ha="center", va="bottom", fontsize=8, color=INK)
-    ax.set_xticks(x, T.period, rotation=25, ha="right", fontsize=8)
-    ax.set_ylim(0, 90)
-    ax.set_yticks(range(0, 81, 10))
-    ax.set_ylabel("Number of source publications (n = 280)")
-    ax.set_title("A  Source publications per period (dataset)")
+        ax.text(xi, v + 1.5, str(int(v)), ha="center", va="bottom", fontsize=9.5, color=INK)
+    ax.set_xticks(x, T.period, fontsize=9.5)
+    ax.set_ylim(0, 92)
+    ax.set_yticks(range(0, 81, 20))
+    ax.set_ylabel("Source publications (n = 280)")
+    ax.set_title("A   Raw publication counts per period in the dataset")
 
     # ── Panel B: Rescaled per 1,000 works with direct point labels ──
     ax = axs[1]
     for nm, col, mk, lbl, dy in [
-        ("openalex", BLUE, "o", "per 1,000 bark and ambrosia beetle works in OpenAlex (n = 22,565)", -4.8),
-        ("kg", ORANGE, "s", "per 1,000 works processed by the automated search (n = 11,085)", 3.2),
+        ("openalex", BLUE, "o", "Per 1,000 bark and ambrosia beetle works in OpenAlex (n = 22,565)", -5.5),
+        ("kg", ORANGE, "s", "Per 1,000 dated works in the automated search corpus (n = 11,085)", 4.5),
     ]:
         v = T[f"per1000_{nm}"].values
         lo = T[f"per1000_{nm}_lo"].values
         hi = T[f"per1000_{nm}_hi"].values
         ax.fill_between(x, lo, hi, color=col, alpha=0.14, linewidth=0)
-        ax.plot(x, v, color=col, marker=mk, markersize=5, linewidth=2, label=lbl)
+        ax.plot(x, v, color=col, marker=mk, markersize=6, linewidth=2.2, label=lbl)
         for xi, vi in zip(x, v):
-            offset = dy if not (nm == "openalex" and xi in (0, 8)) else (3.0 if xi == 0 else -4.8)
+            offset = dy if not (nm == "openalex" and xi in (0, 8)) else (4.5 if xi == 0 else -5.5)
             if nm == "kg" and xi == 0:
-                offset = -5.2
+                offset = -6.0
             ax.annotate(f"{vi:.1f}", (xi, vi), textcoords="offset points", xytext=(0, offset),
-                        ha="center", va="bottom" if offset > 0 else "top", fontsize=7.2, color=col, fontweight="bold")
-    ax.set_xticks(x, T.period, rotation=25, ha="right", fontsize=8)
-    ax.set_ylabel("Dataset source publications per 1,000 works")
-    ax.set_title("B  Rescaled by the size of the literature")
-    ax.legend(frameon=False, fontsize=7.8, loc="upper right")
-    ax.set_ylim(0, 118)
-    fig.tight_layout()
+                        ha="center", va="bottom" if offset > 0 else "top", fontsize=8.8, color=col, fontweight="bold")
+    ax.set_xticks(x, T.period, fontsize=9.5)
+    ax.set_ylabel("Publications per 1,000 works")
+    ax.set_title("B   Publication rate rescaled by the size of the beetle literature")
+    ax.legend(frameon=False, fontsize=9.2, loc="upper right")
+    ax.set_ylim(0, 120)
+    fig.tight_layout(pad=1.2)
     save(fig, "Figure6_rescaled_trend")
 
     # Supplementary 5-year version
@@ -270,14 +269,14 @@ def fig6():
 
 
 def fig7():
-    cand_path = A / "out/candidate_records_public.csv"
+    cand_path = A / "out/INTERNAL_candidate_review_table.csv"
     if not cand_path.exists():
         cand_path = A / "out/candidate_records_public.csv"
     C = pd.read_csv(cand_path)
     L = C[C.stratum.eq("literature read by the KG") & C.beetle_rank.eq("species")]
     Fo = L[L.focused]
 
-    fig, axs = plt.subplots(1, 2, figsize=(12.8, 4.4), gridspec_kw={"width_ratios": [1.15, 1.1]})
+    fig, axs = plt.subplots(2, 1, figsize=(8.2, 7.0), gridspec_kw={"height_ratios": [1.05, 1.05]})
 
     # ── Panel A: Sequential inclusion filter funnel (showing both sources and records) ──
     ax = axs[0]
@@ -289,53 +288,57 @@ def fig7():
             rec_counts.append(int(len(Fo) + C[C.stratum.eq("literature read by the KG") & ~C.beetle_rank.eq("species") & C.focused].shape[0]))
         else:
             rec_counts.append(int(r[edge_cols].sum()))
-    # Note: focused subset has 855 species-level records in candidates_summary.csv
     CS = pd.read_csv(A / "out/candidates_summary.csv").set_index("stratum")
     rec_counts[-1] = int(CS.loc["literature, focused subset", "edges"])
 
     labels_clean = [
-        lbl.replace("in her dataset", "in the dataset").replace("R6 on-topic source, own statement", "R6 focused primary beetle study")
-        for lbl in F.label
+        "All extracted associations",
+        "R1: Pathogen or parasite",
+        "R2: One of the 6 target groups",
+        "R3: Fungi/bacteria harm beetle",
+        "R4: Primary research source",
+        "R5: Absent from manual dataset",
+        "R6: Focused beetle study",
     ]
     y = np.arange(len(F))[::-1]
-    ax.barh(y, F.sources, color=BLUE, height=0.62)
+    ax.barh(y, F.sources, color=BLUE, height=0.64)
     for yi, s_cnt, r_cnt in zip(y, F.sources, rec_counts):
-        ax.text(s_cnt + 35, yi, f"{int(s_cnt):,} ({r_cnt:,} records)", va="center", fontsize=7.8, color=INK)
-    ax.set_yticks(y, labels_clean, fontsize=8)
+        ax.text(s_cnt + 45, yi, f"{int(s_cnt):,} sources ({r_cnt:,} records)", va="center", fontsize=9.2, color=INK)
+    ax.set_yticks(y, labels_clean, fontsize=9.5)
     ax.grid(axis="x")
     ax.grid(axis="y", visible=False)
-    ax.set_xlabel("Publications with at least one record")
-    ax.set_title("A  From automated-search records to candidates")
-    ax.set_xlim(0, F.sources.max() * 1.36)
+    ax.set_xlabel("Number of source publications")
+    ax.set_title("A   Sequential filtering of automated-search records to candidate additions")
+    ax.set_xlim(0, F.sources.max() * 1.44)
 
     # ── Panel B: Focused candidate publications by category (strictly descending) ──
     ax = axs[1]
     cats = ["Fungi", "Nematode", "Bacteria", "Microsporidia", "Protist", "Virus"]
     nice = {
-        "Fungi": "fungi",
-        "Nematode": "nematodes",
-        "Bacteria": "bacteria",
-        "Microsporidia": "microsporidia",
-        "Protist": "protists",
-        "Virus": "viruses",
+        "Fungi": "Fungi",
+        "Nematode": "Nematodes",
+        "Bacteria": "Bacteria",
+        "Microsporidia": "Microsporidia",
+        "Protist": "Protists",
+        "Virus": "Viruses",
     }
     newp = [int(Fo[Fo.category.eq(c) & Fo.new_pair].source_id.nunique()) for c in cats]
     totp = [int(Fo[Fo.category.eq(c)].source_id.nunique()) for c in cats]
     oldp = [t - n for t, n in zip(totp, newp)]
 
     x = np.arange(len(cats))
-    ax.bar(x, newp, color=BLUE, width=0.68, label="adds a beetle–organism pair absent from the dataset")
-    ax.bar(x, oldp, bottom=newp, color=LIGHT, width=0.68, label="all pairs already in the dataset (new source)",
+    ax.bar(x, newp, color=BLUE, width=0.58, label="Adds a beetle–organism pair absent from the dataset")
+    ax.bar(x, oldp, bottom=newp, color=LIGHT, width=0.58, label="Additional source for a pair already in the dataset",
            edgecolor="white", linewidth=0.8)
     for xi, tot, nw in zip(x, totp, newp):
-        ax.text(xi, tot + 3.5, f"{tot}\n({nw} new)", ha="center", va="bottom", fontsize=7.5, color=INK, linespacing=1.05)
-    ax.set_xticks(x, [nice[c] for c in cats], rotation=20, ha="right", fontsize=8)
-    ax.set_ylim(0, 325)
+        ax.text(xi, tot + 4.5, f"{tot}\n({nw} new)", ha="center", va="bottom", fontsize=9.0, color=INK, linespacing=1.05)
+    ax.set_xticks(x, [nice[c] for c in cats], fontsize=9.5)
+    ax.set_ylim(0, 345)
     ax.set_ylabel("Focused candidate publications (n = 373)")
-    ax.set_title("B  Focused candidate publications by category")
-    ax.legend(frameon=False, fontsize=7.8, loc="upper right")
+    ax.set_title("B   Focused candidate publications by pathogen category")
+    ax.legend(frameon=False, fontsize=9.2, loc="upper right")
 
-    fig.tight_layout()
+    fig.tight_layout(pad=1.2)
     save(fig, "Figure7_candidates")
 
 
