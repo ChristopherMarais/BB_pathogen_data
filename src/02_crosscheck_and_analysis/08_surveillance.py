@@ -24,9 +24,9 @@ import numpy as np
 import pandas as pd
 import pycountry
 
-A = Path(__file__).resolve().parents[2] / "data"
-SNAP = Path(__file__).resolve().parents[2] / "data"
-RISK = Path(__file__).resolve().parents[2] / "data"
+A = Path("/home/gmarais/gmarais/PhD/BarkBeetle_KG/papers/pathogens/analysis")
+SNAP = Path("/home/gmarais/gmarais/PhD/BarkBeetle_KG/species_kg/snapshots/kg_v2.22_2026-10-22/species_kg")
+RISK = Path("/home/gmarais/gmarais/PhD/BarkBeetle_KG/species_kg/analysis/risk/out")
 
 
 def main():
@@ -99,12 +99,17 @@ def main():
 
     # ---------------- geography
     def iso(name):
+        if pd.isna(name):
+            return ""
         n = str(name or "").strip()
-        if not n or n.lower() in ("nan", "none"):
+        if not n or n.lower() in ("nan", "none", "<na>", "na"):
             return ""
         fix = {"United States": "US", "USA": "US", "Russia": "RU", "Czech Republic": "CZ", "Czechia": "CZ",
                "South Korea": "KR", "Korea": "KR", "Iran": "IR", "Turkey": "TR", "Türkiye": "TR", "UK": "GB",
-               "United Kingdom": "GB", "England": "GB", "Scotland": "GB", "Taiwan": "TW", "Vietnam": "VN",
+               "United Kingdom": "GB", "England": "GB", "Great Britain": "GB", "Scotland": "GB",
+               "British Columbia": "CA", "México": "MX", "Mexico": "MX", "Côte d’Ivoire": "CI",
+               "Côte d'Ivoire": "CI", "Ivory Coast": "CI",
+               "Taiwan": "TW", "Vietnam": "VN",
                "Bosnia and Herzegovina": "BA", "Slovak Republic": "SK", "Moldova": "MD", "Laos": "LA",
                "Former Yugoslavia": "", "Yugoslavia": "", "USSR": "", "Soviet Union": "", "Europe": ""}
         if n in fix:

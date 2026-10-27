@@ -108,7 +108,7 @@ intro = [
     ("", False),
     ("3. Guide to the Sheets & Order of Review", True),
     ("• Sheet '1 Random sample' (100 records, seed 20261026): CHECK FIRST. Checking all 100 rows in the yellow columns "
-     "gives the exact verified precision percentage and 95% confidence interval for the [XX] placeholders in the manuscript.", False),
+     "provides a stratified manual precision estimate (with 95% confidence interval) for the focused candidate records.", False),
     ("• Sheet '2 Platypodinae' (13 records): Candidate pathogen records for Platypodinae (backing the suggested Results sentence).", False),
     ("• Sheet '3 Coffee berry borer' (244 records): Focused candidate records for Hypothenemus hampei.", False),
     ("• Sheet '4 Other candidates' (499 records): All other focused primary-source candidate records.", False),
