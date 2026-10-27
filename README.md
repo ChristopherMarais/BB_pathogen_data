@@ -1,11 +1,5 @@
 # Automated Literature & Database Cross-Check for Bark and Ambrosia Beetle Pathogens
 
-Companion code and verification tables for the manuscript:
-
-> **Candidate entomopathogens reported from bark and ambrosia beetles**  
-> Yiyi Dong, Christopher Marais, and Jiri Hulcr  
-> *School of Forest, Fisheries, & Geomatics Sciences, University of Florida*
-
 ---
 
 ## Overview
