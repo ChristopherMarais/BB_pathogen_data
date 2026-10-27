@@ -1,0 +1,12 @@
+pandas>=2.1
+numpy>=1.26
+scipy>=1.11
+duckdb>=1.0
+pyarrow>=15.0
+matplotlib>=3.8
+openpyxl>=3.1
+rapidfuzz>=3.6
+pycountry>=23.12
+unidecode>=1.3
+requests>=2.31
+regex>=2023.12
