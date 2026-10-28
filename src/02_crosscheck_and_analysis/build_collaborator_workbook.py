@@ -77,7 +77,7 @@ COLS = [
     ("Language", "language", 9),
     ("Beetle new to dataset", "new_beetle", 10),
     ("Pair new to dataset", "new_pair", 10),
-    ("Supporting sentence (lab only)", "supporting_quote_INTERNAL_ONLY", 70),
+    ("Supporting sentence", "supporting_quote_INTERNAL_ONLY", 70),
     ("MEETS INCLUSION RULES?", None, 14),
     ("Beetle correct?", None, 10),
     ("Organism correct?", None, 10),

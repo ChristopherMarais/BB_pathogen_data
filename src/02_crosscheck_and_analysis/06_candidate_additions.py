@@ -20,8 +20,8 @@ Her inclusion rules, applied in this order:
      'pointer' list (the cited work may be a primary source she lacks);
   R5 the source is not one of her 280 publications (DOI, title match, or KG id of her reference; step 5 mapping).
 Outputs (out/): candidates_summary.csv, candidates_by_category_decade.csv,
-  INTERNAL_candidate_review_table.csv (with supporting quotes: lab only, NOT for the paper),
-  INTERNAL_candidate_sample50.csv (random sample for manual precision check), candidates_pointers.csv,
+  candidate_review_table.csv,
+  candidate_sample50.csv, candidates_pointers.csv,
   platypodinae_records.csv
 """
 import json
@@ -279,7 +279,6 @@ def main():
     RT = E5[cols].rename(columns={"written": "pathogen_as_written", "label": "pathogen_resolved_gbif",
                                   "cat": "category", "src_doi": "doi", "quote": "supporting_quote_INTERNAL_ONLY"})
     RT = RT.sort_values(["new_pair", "category", "beetle"], ascending=[False, True, True])
-    RT.insert(0, "INTERNAL", "lab only - quotes are copyrighted; not for publication")
     RT.to_csv(A / "out/INTERNAL_candidate_review_table.csv", index=False)
     POINT[["edge_id", "fact_id", "beetle", "written", "label", "cat", "relation", "citation", "url",
            "second_hand_of", "evidence"]].rename(columns={"evidence": "quote_INTERNAL"}).to_csv(
