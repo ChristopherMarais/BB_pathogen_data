@@ -81,30 +81,8 @@ This repository contains the pathogen-specific code and verification outputs use
 │       ├── 09_check_manuscript_numbers.py
 │       ├── 10_figures.py
 │       ├── 11_summary_tables.py
+│       ├── 12_enrich_references.py
 │       └── build_collaborator_workbook.py
-├── data/
-│   ├── figshare/
-│   │   └── bark_ambrosia_beetle_pathogen_database_v1.1.csv
-│   └── out/
-│       ├── candidate_records_public.csv
-│       ├── candidate_funnel.csv
-│       ├── candidates_summary.csv
-│       ├── candidates_by_category_decade.csv
-│       ├── recall_by_publication.csv
-│       ├── recall_summary.csv
-│       ├── agreement_by_publication.csv
-│       ├── agreement_pairs.csv
-│       ├── agreement_summary.csv
-│       ├── taxonomy_beetles.csv
-│       ├── taxonomy_pathogens.csv
-│       ├── taxonomy_name_merge.csv
-│       ├── trend_rescaled_decade.csv
-│       ├── trend_rescaled_5yr.csv
-│       ├── trend_tests.txt
-│       ├── surveillance_top.csv
-│       ├── surveillance_ranked_short.csv
-│       ├── geography_countries.csv
-│       └── manuscript_number_check.csv
 └── figures/
     ├── Figure5_crosscheck.pdf / .png
     ├── Figure6_rescaled_trend.pdf / .png
@@ -113,7 +91,7 @@ This repository contains the pathogen-specific code and verification outputs use
 
 ---
 
-## Reproducing the Figures and Verification Workbook
+## Reproducing the Analysis and Figures
 
 ```bash
 git clone https://github.com/ChristopherMarais/BB_pathogen_data.git
@@ -123,4 +101,4 @@ conda activate barkbeetle-pathogens
 bash run_all.sh
 ```
 
-> **Note on Copyrighted Quotes**: Public tables in `data/out/` omit verbatim sentences extracted from publisher-copyrighted full texts (`candidate_records_public.csv` retains full citation, DOI/URL, resolved beetle and pathogen taxonomy, category, relation, and filter flags).
+> **Data Availability**: The underlying manual dataset is hosted on Figshare (`bark_ambrosia_beetle_pathogen_database_v1.1.csv`). To run the full analysis pipeline locally, place data tables in the `data/` directory (git-ignored for proprietary and licensing integrity).
